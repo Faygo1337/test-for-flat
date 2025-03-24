@@ -34,7 +34,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <Router>
+    <Router basename="/test-for-flat">
       <div className="app">
         <Routes>
           <Route
