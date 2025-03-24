@@ -1,26 +1,69 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import PostsList from "./components/postList/PostList";
+import PostDetails from "./components/postDetails/PostDetails";
+import Axios from "axios";
+import { IPost, IUser, IComment } from "./components/types/types";
+import "./App.css";
 
-function App() {
+const App: React.FC = () => {
+  const [posts, setPosts] = useState<IPost[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
+  const [comments, setComments] = useState<IComment[]>([]);
+  const [isLoading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [postsRes, usersRes, commentsRes] = await Promise.all([
+          Axios.get("https://jsonplaceholder.typicode.com/posts"),
+          Axios.get("https://jsonplaceholder.typicode.com/users"),
+          Axios.get("https://jsonplaceholder.typicode.com/comments"),
+        ]);
+        setPosts(postsRes.data);
+        setUsers(usersRes.data);
+        setComments(commentsRes.data);
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to fetch data");
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="app">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <PostsList
+                posts={posts}
+                users={users}
+                isLoading={isLoading}
+                error={error}
+              />
+            }
+          />
+          <Route
+            path="/posts/:postId"
+            element={
+              <PostDetails
+                posts={posts}
+                comments={comments}
+                users={users}
+                isLoading={isLoading}
+                error={error}
+              />
+            }
+          />
+        </Routes>
+      </div>
+    </Router>
   );
-}
+};
 
 export default App;
