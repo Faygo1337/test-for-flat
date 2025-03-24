@@ -1,6 +1,7 @@
 {
   "name": "test-for-flat",
   "version": "0.1.0",
+  "homepage": "https://Faygo1337.github.io/test-for-flat",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
